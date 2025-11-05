@@ -1,10 +1,14 @@
-import mysql from 'mysql2/promise';
-import 'dotenv/config';
+import mysql from "mysql2/promise";
+import "dotenv/config";
 
+// ✅ Utilise les variables d’environnement automatiquement
 export const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'github_users',
-    port: 3307,
+    host: process.env.DB_HOST || "127.0.0.1",
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASS || "root",
+    database: process.env.DB_NAME || "github_users",
+    port: Number(process.env.DB_PORT) || 3307,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
 });
