@@ -17,7 +17,7 @@ import "dotenv/config";
         });
 
         // 📄 Lis ton fichier SQL exporté
-        const sqlFile = "./github_users_export.sql"; // mets le fichier à la racine du projet
+        const sqlFile = "./github_users_export_v2.sql"; // mets le fichier à la racine du projet
         if (!fs.existsSync(sqlFile)) {
             throw new Error(`❌ Fichier introuvable: ${sqlFile}`);
         }
