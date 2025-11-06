@@ -10,37 +10,37 @@ import inviteRoutes from "./routes/invite";
 
 const app = express();
 
-/**
- * 🌍 Frontend autorisés
- * (Railway lit FRONTEND_URL depuis tes variables d'environnement)
- */
+// 🌍 Liste des origines autorisées
 const allowedOrigins = [
-    process.env.FRONTEND_URL || "https://sybauu.com",
+    "https://sybauu.com",
     "https://www.sybauu.com",
-    "http://localhost:5174", // pour tests locaux
+    "http://localhost:5174",
 ];
 
-// ✅ Middleware CORS sécurisé
+// ✅ Middleware CORS global
 app.use(
     cors({
         origin: (origin, callback) => {
-            if (!origin || allowedOrigins.includes(origin)) {
-                callback(null, true);
-            } else {
-                console.warn("🚫 CORS refusé pour:", origin);
-                callback(new Error("CORS non autorisé"));
+            // Autoriser les requêtes sans origin (Postman, curl, etc.)
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
             }
+            console.warn("🚫 CORS refusé pour:", origin);
+            return callback(new Error("CORS non autorisé"));
         },
+        credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
-        credentials: true,
     })
 );
 
-// Permet aux requêtes préflight (OPTIONS) de passer sans erreur
-app.options("*", cors());
+// ✅ Répondre explicitement aux préflight OPTIONS
+app.options("*", cors({
+    origin: allowedOrigins,
+    credentials: true,
+}));
 
-// Middleware de parsing
 app.use(express.json());
 app.use(cookieParser());
 
@@ -50,7 +50,15 @@ app.use("/api", apiRoutes);
 app.use("/user", userRoutes);
 app.use("/api/invite", inviteRoutes);
 
-// 🔹 Lancement du serveur
+// 🔹 Gestion d’erreur pour éviter les 500 silencieux
+app.use((err: any, req: any, res: any, next: any) => {
+    console.error("❌ Erreur serveur:", err.message);
+    if (err.message.includes("CORS")) {
+        return res.status(403).json({ error: "CORS non autorisé" });
+    }
+    res.status(500).json({ error: "Erreur serveur" });
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
