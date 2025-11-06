@@ -11,18 +11,36 @@ import inviteRoutes from "./routes/invite";
 const app = express();
 
 /**
- * 🔹 FRONTEND_URL = ton domaine public (Hostinger)
- * 🔹 API_URL = ton domaine Railway (facultatif)
+ * 🌍 Frontend autorisés
+ * (Railway lit FRONTEND_URL depuis tes variables d'environnement)
  */
-const FRONTEND_URL = process.env.FRONTEND_URL || "https://sybauu.com";
+const allowedOrigins = [
+    process.env.FRONTEND_URL || "https://sybauu.com",
+    "https://www.sybauu.com",
+    "http://localhost:5174", // pour tests locaux
+];
 
+// ✅ Middleware CORS sécurisé
 app.use(
     cors({
-        origin: [FRONTEND_URL, "https://www.sybauu.com"], // accepte les deux variantes
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                console.warn("🚫 CORS refusé pour:", origin);
+                callback(new Error("CORS non autorisé"));
+            }
+        },
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true,
     })
 );
 
+// Permet aux requêtes préflight (OPTIONS) de passer sans erreur
+app.options("*", cors());
+
+// Middleware de parsing
 app.use(express.json());
 app.use(cookieParser());
 
@@ -32,8 +50,9 @@ app.use("/api", apiRoutes);
 app.use("/user", userRoutes);
 app.use("/api/invite", inviteRoutes);
 
+// 🔹 Lancement du serveur
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
-    console.log(`🌍 Accepting requests from: ${FRONTEND_URL}`);
+    console.log("🌍 Accepting requests from:", allowedOrigins.join(", "));
 });
