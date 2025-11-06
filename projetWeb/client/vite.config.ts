@@ -6,4 +6,8 @@ export default defineConfig({
     server: {
         port: 5174,
     },
+    build: {
+        outDir: 'dist',
+    },
+    base: './', // 👈 important pour Hostinger (évite les 404 sur reload)
 });

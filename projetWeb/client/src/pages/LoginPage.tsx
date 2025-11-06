@@ -1,21 +1,27 @@
 import React, { useState } from 'react';
+import { API_BASE } from '../config';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
-        const res = await fetch('http://localhost:4000/user/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-        });
-        const data = await res.json();
-        if (data.ok) {
-            localStorage.setItem('userEmail', email);
-            window.location.href = '/add-token';
-        } else {
-            alert(data.error || 'Erreur login');
+        try {
+            const res = await fetch(`${API_BASE}/user/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await res.json();
+            if (data.ok) {
+                localStorage.setItem('userEmail', email);
+                window.location.href = '/add-token';
+            } else {
+                alert(data.error || 'Erreur de connexion');
+            }
+        } catch (err) {
+            alert('❌ Erreur serveur : ' + err);
         }
     };
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE } from '../config';
 
 export default function AddTokenPage() {
     const [token, setToken] = useState('');
@@ -10,17 +11,22 @@ export default function AddTokenPage() {
             return;
         }
 
-        const res = await fetch('http://localhost:4000/user/token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, github_token: token }),
-        });
-        const data = await res.json();
-        if (data.ok) {
-            alert('Token enregistré avec succès ✅');
-            window.location.href = '/home';
-        } else {
-            alert(data.error || 'Erreur');
+        try {
+            const res = await fetch(`${API_BASE}/user/token`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, github_token: token }),
+            });
+
+            const data = await res.json();
+            if (data.ok) {
+                alert('Token enregistré avec succès ✅');
+                window.location.href = '/home';
+            } else {
+                alert(data.error || 'Erreur serveur');
+            }
+        } catch (err) {
+            alert('❌ Erreur de connexion au serveur : ' + err);
         }
     };
 
