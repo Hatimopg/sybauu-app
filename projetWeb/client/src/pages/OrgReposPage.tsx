@@ -10,6 +10,9 @@ const OrgReposPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    const FRONTEND_BASE =
+        window.location.origin || "https://sybauu.com"; // ✅ Auto-adapte au domaine actuel
+
     const loadRepos = async () => {
         if (!org) return;
         try {
@@ -35,7 +38,10 @@ const OrgReposPage: React.FC = () => {
     if (!org) return <div>Organisation inconnue</div>;
 
     return (
-        <div className="app-container" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        <div
+            className="app-container"
+            style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+        >
             <Header />
 
             <main style={{ flex: 1, background: "#f7f9fc", padding: "2rem" }}>
@@ -51,7 +57,8 @@ const OrgReposPage: React.FC = () => {
                         }}
                     >
                         <h2 style={{ fontSize: "1.8rem", fontWeight: 700, color: "#111" }}>
-                            📦 Organisation : <span style={{ color: "#0078ff" }}>{org}</span>
+                            📦 Organisation :{" "}
+                            <span style={{ color: "#0078ff" }}>{org}</span>
                         </h2>
                         <div style={{ display: "flex", gap: 8 }}>
                             <button
@@ -86,16 +93,28 @@ const OrgReposPage: React.FC = () => {
                     </div>
 
                     {/* ---- LISTE DES REPOS ---- */}
-                    <h3 style={{ marginBottom: 12, color: "#222", fontWeight: 600 }}>Dépôts existants</h3>
+                    <h3
+                        style={{
+                            marginBottom: 12,
+                            color: "#222",
+                            fontWeight: 600,
+                        }}
+                    >
+                        Dépôts existants
+                    </h3>
 
                     {loading ? (
                         <p>Chargement…</p>
                     ) : repos.length === 0 ? (
                         <p style={{ color: "#666" }}>Aucun dépôt trouvé</p>
                     ) : (
-                        <div className="repo-list" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                        <div
+                            className="repo-list"
+                            style={{ display: "flex", flexDirection: "column", gap: 16 }}
+                        >
                             {repos.map((repo) => {
-                                const inviteLink = `http://localhost:5174/invite?org=${org}&repo=${repo.name}&inviter=${USER_EMAIL}`;
+                                const inviteLink = `${FRONTEND_BASE}/invite?org=${org}&repo=${repo.name}&inviter=${USER_EMAIL}`; // ✅ Corrigé
+
                                 return (
                                     <div
                                         key={repo.id}
@@ -118,7 +137,14 @@ const OrgReposPage: React.FC = () => {
                                                 alignItems: "center",
                                             }}
                                         >
-                                            <span style={{ fontWeight: 600, fontSize: "1.1rem" }}>{repo.name}</span>
+                                            <span
+                                                style={{
+                                                    fontWeight: 600,
+                                                    fontSize: "1.1rem",
+                                                }}
+                                            >
+                                                {repo.name}
+                                            </span>
                                             <div style={{ display: "flex", gap: 16 }}>
                                                 <Link
                                                     to={`/org/${org}/repos/${repo.name}/members`}
