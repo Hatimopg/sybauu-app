@@ -17,7 +17,7 @@ export default function InvitePage() {
     useEffect(() => {
         const email = localStorage.getItem("userEmail");
 
-        // Si pas connecté → on redirige vers /login
+        // 🟡 Si pas connecté → on redirige vers /login
         if (!email) {
             setMessage("⚠️ Vous devez vous connecter avec GitHub avant d’accepter l’invitation.");
             setLoading(false);
@@ -58,7 +58,16 @@ export default function InvitePage() {
         <div className="app-container" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
             <Header />
 
-            <main style={{ flex: 1, padding: "2rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <main
+                style={{
+                    flex: 1,
+                    padding: "2rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
                 <div
                     style={{
                         background: "#fff",
@@ -77,14 +86,15 @@ export default function InvitePage() {
                     </p>
                     <p style={{ fontWeight: 500 }}>{message}</p>
 
+                    {/* 🟢 Bouton GitHub corrigé */}
                     {!loading && message.includes("connecter") && (
                         <button
                             onClick={async () => {
                                 try {
-                                    const res = await fetch("http://localhost:4000/auth/url");
+                                    const res = await fetch(`${API_BASE}/auth/url`); // ✅ utilise ton API_BASE ici aussi
                                     const data = await res.json();
                                     if (data.url) {
-                                        window.location.href = data.url; // 🟢 redirection directe vers GitHub
+                                        window.location.href = data.url; // redirection vers GitHub
                                     } else {
                                         alert("Impossible d'obtenir l'URL GitHub 😭");
                                     }
@@ -112,7 +122,6 @@ export default function InvitePage() {
                         >
                             🔒 Se connecter avec GitHub
                         </button>
-
                     )}
                 </div>
             </main>
