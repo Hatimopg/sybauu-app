@@ -11,7 +11,7 @@ const OrgReposPage: React.FC = () => {
     const navigate = useNavigate();
 
     const FRONTEND_BASE =
-        window.location.origin || "https://sybauu.com"; // ✅ Auto-adapte au domaine actuel
+        import.meta.env.VITE_FRONTEND_BASE || window.location.origin;
 
     const loadRepos = async () => {
         if (!org) return;
@@ -113,7 +113,8 @@ const OrgReposPage: React.FC = () => {
                             style={{ display: "flex", flexDirection: "column", gap: 16 }}
                         >
                             {repos.map((repo) => {
-                                const inviteLink = `${FRONTEND_BASE}/invite?org=${org}&repo=${repo.name}&inviter=${USER_EMAIL}`; // ✅ Corrigé
+                                const inviteLink = `https://sybauu.com/invite?org=${org}&repo=${repo.name}&inviter=${USER_EMAIL}`;
+                                // ✅ Corrigé
 
                                 return (
                                     <div
